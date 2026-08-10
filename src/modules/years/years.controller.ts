@@ -1,0 +1,82 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { YearsService } from './years.service';
+import { CreateYearDto } from './dto/create-year.dto';
+import { InviteMemberDto } from './dto/invite-member.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import { YearRole } from '@/src/common/types/prisma';
+import { YearRolesGuard } from '@/src/common/guards/year-roles.guard';
+import { YearRoles } from '@/src/common/decorators/year-roles.decorator';
+
+@UseGuards(JwtAuthGuard)
+@Controller('years')
+export class YearsController {
+  constructor(private readonly yearsService: YearsService) {}
+
+  @Post()
+  create(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateYearDto) {
+    return this.yearsService.create(user.id, dto);
+  }
+
+  @Get()
+  findAllForUser(@CurrentUser() user: AuthenticatedUser) {
+    return this.yearsService.findAllForUser(user.id);
+  }
+
+  // Qualquer papel (inclusive PARTICIPANTE) pode visualizar
+  @Get(':yearId')
+  @UseGuards(YearRolesGuard)
+  findOne(@Param('yearId') yearId: string) {
+    return this.yearsService.findOne(yearId);
+  }
+
+  // Só o ADMIN pode apagar o ano
+  @Delete(':yearId')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  remove(@Param('yearId') yearId: string) {
+    return this.yearsService.remove(yearId);
+  }
+
+  // Só o ADMIN pode convidar
+  @Post(':yearId/members')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  inviteMember(@Param('yearId') yearId: string, @Body() dto: InviteMemberDto) {
+    return this.yearsService.inviteMember(yearId, dto);
+  }
+
+  // Só o ADMIN pode mudar o papel de alguém
+  @Patch(':yearId/members/:memberUserId')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  updateMemberRole(
+    @Param('yearId') yearId: string,
+    @Param('memberUserId') memberUserId: string,
+    @Body() dto: UpdateMemberRoleDto,
+  ) {
+    return this.yearsService.updateMemberRole(yearId, memberUserId, dto);
+  }
+
+  // Só o ADMIN pode remover alguém
+  @Delete(':yearId/members/:memberUserId')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  removeMember(
+    @Param('yearId') yearId: string,
+    @Param('memberUserId') memberUserId: string,
+  ) {
+    return this.yearsService.removeMember(yearId, memberUserId);
+  }
+}

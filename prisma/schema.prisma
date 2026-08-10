@@ -1,0 +1,214 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// ==========================================
+/// AUTH
+/// ==========================================
+
+model User {
+  id              String  @id @default(uuid())
+  name            String
+  email           String  @unique
+  passwordHash    String
+  isEmailVerified Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokens           RefreshToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  createdYears            Year[]                   @relation("YearCreator")
+  yearMemberships         YearMember[]
+  createdCards            Card[]                   @relation("CardCreator")
+
+  @@map("users")
+}
+
+model EmailVerificationToken {
+  id        String @id @default(uuid())
+  tokenHash String @unique // SHA-256 do token enviado por e-mail
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String @id @default(uuid())
+  tokenHash String @unique // SHA-256 do token enviado por e-mail
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model RefreshToken {
+  id        String @id @default(uuid())
+  tokenHash String @unique // SHA-256 do token opaco
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  // encadeamento da rotação: aponta para o token que substituiu este
+  replacedByTokenId String?       @unique
+  replacedByToken   RefreshToken? @relation("TokenRotation", fields: [replacedByTokenId], references: [id])
+  previousToken     RefreshToken? @relation("TokenRotation")
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+/// ==========================================
+/// ANO (YEAR) + COLABORADORES
+/// ==========================================
+
+enum YearRole {
+  ADMIN
+  EDITOR
+  PARTICIPANTE
+}
+
+model Year {
+  id   String @id @default(uuid())
+  year Int
+
+  creatorId String
+  creator   User   @relation("YearCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members YearMember[]
+  cards   Card[]
+
+  @@unique([creatorId, year]) // um usuário não cria o mesmo ano duas vezes
+  @@map("years")
+}
+
+model YearMember {
+  id String @id @default(uuid())
+
+  yearId String
+  year   Year   @relation(fields: [yearId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role YearRole
+
+  invitedAt  DateTime  @default(now())
+  acceptedAt DateTime?
+
+  @@unique([yearId, userId]) // usuário só pode ter 1 papel por ano
+  @@map("year_members")
+}
+
+/// ==========================================
+/// CARD (MÊS)
+/// ==========================================
+
+model Card {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  month       Int // 1 a 12 (validar range na aplicação)
+
+  yearId String
+  year   Year   @relation(fields: [yearId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation("CardCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete -> permite restaurar
+
+  incomes  Income[]
+  expenses Expense[]
+
+  @@unique([yearId, month]) // garante no máximo 12 cards por ano, 1 por mês
+  @@index([yearId, deletedAt])
+  @@map("cards")
+}
+
+enum IncomeType {
+  SALARIO
+  RENDA_EXTRA
+  OUTROS
+}
+
+model Income {
+  id          String     @id @default(uuid())
+  description String
+  type        IncomeType @default(SALARIO)
+  value       Decimal    @db.Decimal(12, 2)
+
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cardId])
+  @@map("incomes")
+}
+
+enum ExpenseCategory {
+  MORADIA
+  ALIMENTACAO
+  TRANSPORTE
+  SAUDE
+  EDUCACAO
+  LAZER
+  VESTUARIO
+  DIVIDAS
+  INVESTIMENTOS
+  OUTROS
+}
+
+model Expense {
+  id           String          @id @default(uuid())
+  name         String
+  category     ExpenseCategory
+  value        Decimal         @db.Decimal(12, 2)
+  installments Int             @default(1) // quantidade de parcelas
+
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cardId])
+  @@map("expenses")
+}

@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: planeja_facil_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: planeja-facil
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: planeja-facil-db
+    ports:
+      - '5432:5432'
+    volumes:
+      - planeja_facil_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U planeja-facil -d planeja-facil-db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  planeja_facil_db_data:
