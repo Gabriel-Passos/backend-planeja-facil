@@ -4,6 +4,8 @@
 
 Este é um projeto pessoal de estudo, construído com escopo enxuto e propósito: focar no essencial primeiro e evoluir de forma incremental, sem acumular complexidade desnecessária. Cada decisão de arquitetura aqui foi pensada (e discutida) de propósito, não só copiada de um tutorial.
 
+Este repositório contém o **backend** da aplicação, veja o [frontend](https://github.com/Gabriel-Passos/frontend-planeja-facil) construído em ReactJS.
+
 ---
 
 ## 🧱 Stack
