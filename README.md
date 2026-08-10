@@ -2,23 +2,23 @@
 
 > Um app de finanças pessoais simples, porém robusto. Organize suas receitas e despesas mês a mês, colabore com outras pessoas no mesmo ano financeiro, e nunca perca o controle do que sobra no fim do mês.
 
-Este é o backend de uma reconstrução enxuta do meu projeto anterior, o [`smart-finance`](#) — a ideia foi recomeçar com escopo reduzido, focando no essencial primeiro, e evoluir de forma incremental sem carregar a complexidade acumulada do projeto original. É também um projeto de estudo: cada decisão de arquitetura aqui foi pensada (e discutida) de propósito, não só copiada de um tutorial.
+Este é um projeto pessoal de estudo, construído com escopo enxuto e propósito: focar no essencial primeiro e evoluir de forma incremental, sem acumular complexidade desnecessária. Cada decisão de arquitetura aqui foi pensada (e discutida) de propósito, não só copiada de um tutorial.
 
 ---
 
 ## 🧱 Stack
 
-| Camada              | Tecnologia                                                              |
-| ------------------- | ----------------------------------------------------------------------- |
-| Framework           | [NestJS 11](https://nestjs.com/)                                        |
-| ORM                 | [Prisma 7](https://www.prisma.io/) (driver adapter, client customizado) |
-| Banco de dados      | PostgreSQL (via Docker Compose)                                         |
-| Autenticação        | JWT (access token) + refresh token rotativo em cookie `httpOnly`        |
-| E-mail transacional | [Resend](https://resend.com/)                                           |
-| Validação           | `class-validator` + `class-transformer`                                 |
-| Documentação da API | Swagger / OpenAPI (`@nestjs/swagger`)                                   |
-| Qualidade           | ESLint (flat config) + Prettier                                         |
-| Testes              | Jest (configurado, cobertura ainda pendente)                            |
+| Camada | Tecnologia |
+|---|---|
+| Framework | [NestJS 11](https://nestjs.com/) |
+| ORM | [Prisma 7](https://www.prisma.io/) (driver adapter, client customizado) |
+| Banco de dados | PostgreSQL (via Docker Compose) |
+| Autenticação | JWT (access token) + refresh token rotativo em cookie `httpOnly` |
+| E-mail transacional | [Resend](https://resend.com/) |
+| Validação | `class-validator` + `class-transformer` |
+| Documentação da API | Swagger / OpenAPI (`@nestjs/swagger`) |
+| Qualidade | ESLint (flat config) + Prettier |
+| Testes | Jest (configurado, cobertura ainda pendente) |
 
 ---
 
@@ -30,7 +30,7 @@ O módulo mais denso do projeto até agora — e onde mais decisões de seguran�
 
 - **Cadastro, login, confirmação de conta e recuperação de senha** completos
 - **Login não bloqueia usuários com e-mail não confirmado** — por design. A confirmação vira um aviso dentro da plataforma, não uma barreira de entrada
-- **Refresh token com rotação e detecção de reuso**: a cada `/auth/refresh`, o token antigo é revogado e um novo é emitido. Se um token _já revogado_ for reenviado (sinal de possível roubo), **todas** as sessões daquele usuário são revogadas de uma vez
+- **Refresh token com rotação e detecção de reuso**: a cada `/auth/refresh`, o token antigo é revogado e um novo é emitido. Se um token *já revogado* for reenviado (sinal de possível roubo), **todas** as sessões daquele usuário são revogadas de uma vez
 - **Refresh token vive em cookie `httpOnly`**, nunca no corpo da resposta — o JavaScript do frontend não tem como acessá-lo, nem por engano, nem via XSS
 - **Todos os tokens (refresh, verificação de e-mail, redefinição de senha) são armazenados como hash SHA-256** — o valor "cru" só existe no e-mail enviado ou no cookie do navegador, nunca em texto plano no banco
 - **Falha no envio de e-mail nunca derruba o cadastro** — é tratado como best-effort; o usuário é criado normalmente mesmo que o provedor de e-mail esteja fora do ar
@@ -89,7 +89,6 @@ src/
 ## 🚀 Rodando localmente
 
 ### Pré-requisitos
-
 - Node.js 20+
 - Docker (pro Postgres)
 - Uma conta no [Resend](https://resend.com/) (free tier serve)
@@ -118,15 +117,15 @@ A API sobe em `http://localhost:3000`, e a documentação interativa fica em `ht
 
 ### Variáveis de ambiente
 
-| Variável            | Descrição                                                       |
-| ------------------- | --------------------------------------------------------------- |
-| `DATABASE_URL`      | String de conexão do PostgreSQL                                 |
-| `JWT_ACCESS_SECRET` | Segredo usado pra assinar o access token                        |
-| `RESEND_API_KEY`    | Chave de API do Resend                                          |
-| `MAIL_FROM`         | Endereço de envio (formato `Nome <email@dominio.com>`)          |
-| `FRONTEND_URL`      | URL do frontend (usada em CORS e nos links dos e-mails)         |
-| `NODE_ENV`          | `development` ou `production` (afeta a flag `secure` do cookie) |
-| `PORT`              | Porta do servidor (default `3000`)                              |
+| Variável | Descrição |
+|---|---|
+| `DATABASE_URL` | String de conexão do PostgreSQL |
+| `JWT_ACCESS_SECRET` | Segredo usado pra assinar o access token |
+| `RESEND_API_KEY` | Chave de API do Resend |
+| `MAIL_FROM` | Endereço de envio (formato `Nome <email@dominio.com>`) |
+| `FRONTEND_URL` | URL do frontend (usada em CORS e nos links dos e-mails) |
+| `NODE_ENV` | `development` ou `production` (afeta a flag `secure` do cookie) |
+| `PORT` | Porta do servidor (default `3000`) |
 
 ---
 
