@@ -1,99 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 💰 planeja-fácil — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> Um app de finanças pessoais simples, porém robusto. Organize suas receitas e despesas mês a mês, colabore com outras pessoas no mesmo ano financeiro, e nunca perca o controle do que sobra no fim do mês.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este é o backend de uma reconstrução enxuta do meu projeto anterior, o [`smart-finance`](#) — a ideia foi recomeçar com escopo reduzido, focando no essencial primeiro, e evoluir de forma incremental sem carregar a complexidade acumulada do projeto original. É também um projeto de estudo: cada decisão de arquitetura aqui foi pensada (e discutida) de propósito, não só copiada de um tutorial.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🧱 Stack
 
-## Project setup
+| Camada              | Tecnologia                                                              |
+| ------------------- | ----------------------------------------------------------------------- |
+| Framework           | [NestJS 11](https://nestjs.com/)                                        |
+| ORM                 | [Prisma 7](https://www.prisma.io/) (driver adapter, client customizado) |
+| Banco de dados      | PostgreSQL (via Docker Compose)                                         |
+| Autenticação        | JWT (access token) + refresh token rotativo em cookie `httpOnly`        |
+| E-mail transacional | [Resend](https://resend.com/)                                           |
+| Validação           | `class-validator` + `class-transformer`                                 |
+| Documentação da API | Swagger / OpenAPI (`@nestjs/swagger`)                                   |
+| Qualidade           | ESLint (flat config) + Prettier                                         |
+| Testes              | Jest (configurado, cobertura ainda pendente)                            |
 
-```bash
-$ yarn install
+---
+
+## ✨ O que já está implementado
+
+### 🔐 Autenticação
+
+O módulo mais denso do projeto até agora — e onde mais decisões de segurança foram tomadas conscientemente:
+
+- **Cadastro, login, confirmação de conta e recuperação de senha** completos
+- **Login não bloqueia usuários com e-mail não confirmado** — por design. A confirmação vira um aviso dentro da plataforma, não uma barreira de entrada
+- **Refresh token com rotação e detecção de reuso**: a cada `/auth/refresh`, o token antigo é revogado e um novo é emitido. Se um token _já revogado_ for reenviado (sinal de possível roubo), **todas** as sessões daquele usuário são revogadas de uma vez
+- **Refresh token vive em cookie `httpOnly`**, nunca no corpo da resposta — o JavaScript do frontend não tem como acessá-lo, nem por engano, nem via XSS
+- **Todos os tokens (refresh, verificação de e-mail, redefinição de senha) são armazenados como hash SHA-256** — o valor "cru" só existe no e-mail enviado ou no cookie do navegador, nunca em texto plano no banco
+- **Falha no envio de e-mail nunca derruba o cadastro** — é tratado como best-effort; o usuário é criado normalmente mesmo que o provedor de e-mail esteja fora do ar
+
+### 📅 Years (anos financeiros)
+
+- CRUD completo, com sistema de **colaboração multiusuário**
+- Três papéis por ano: `ADMIN` (criador), `EDITOR` (mexe nos cards) e `PARTICIPANTE` (só visualiza)
+- Convites por e-mail (exige que o convidado já tenha conta)
+- Guard de permissão (`YearRolesGuard`) reutilizado em todos os módulos que dependem de contexto de ano
+
+### 🗓️ MonthCards (cards mensais)
+
+- Um card por mês, com o limite de **12 por ano garantido a nível de banco** (constraint única `[yearId, month]` — não é só validação de aplicação)
+- **Soft delete com restauração**, respeitando o limite de 12 cards ativos
+- **Criação aninhada**: já é possível cadastrar rendas e despesas junto com o card, numa única requisição
+- Suporte a atualização parcial (`PATCH`) pensado pra autosave no frontend
+
+### 💵 Entries (Incomes & Expenses)
+
+- CRUD individual de rendas e despesas, pra edição pós-criação
+- Validação de propriedade em cascata: todo item confere se pertence ao card certo, e se o card pertence ao ano certo — fecha brechas de acesso indevido entre usuários de anos diferentes
+
+### 🛡️ Infraestrutura e robustez
+
+- **Filtro global de exceções**, padronizando o formato de erro de toda a API — inclusive traduzindo erros crus do Prisma (constraint única, registro não encontrado, chave estrangeira) pra respostas HTTP com sentido, em vez de vazarem como `500`
+- **Swagger** documentando a API interativamente
+- Configuração cuidadosa de `ValidationPipe` (whitelist, rejeição de campos inesperados, transformação automática de payload — essencial pra validação aninhada funcionar)
+
+---
+
+## 📂 Estrutura de módulos
+
+```
+src/
+├── modules/
+│   ├── auth/           # cadastro, login, refresh, logout, recuperação de senha
+│   ├── users/           # CRUD básico de usuários
+│   ├── mail/             # integração com Resend
+│   ├── years/           # anos financeiros + colaboração
+│   ├── month-cards/     # cards mensais
+│   ├── entries/
+│   │   ├── incomes/     # rendas
+│   │   └── expenses/    # despesas
+│   └── prisma/           # PrismaService (client + driver adapter)
+└── common/
+    ├── guards/            # YearRolesGuard
+    ├── decorators/       # @YearRoles, @CurrentUser
+    ├── filters/           # GlobalExceptionFilter
+    ├── types/              # barrel único pros tipos do Prisma
+    └── utils/              # geração/hash de tokens
 ```
 
-## Compile and run the project
+---
+
+## 🚀 Rodando localmente
+
+### Pré-requisitos
+
+- Node.js 20+
+- Docker (pro Postgres)
+- Uma conta no [Resend](https://resend.com/) (free tier serve)
+
+### Passo a passo
 
 ```bash
-# development
-$ yarn run start
+# instalar dependências
+yarn install
 
-# watch mode
-$ yarn run start:dev
+# subir o banco
+docker compose up -d
 
-# production mode
-$ yarn run start:prod
+# configurar variáveis de ambiente
+cp .env.example .env
+# preencha DATABASE_URL, JWT_ACCESS_SECRET, RESEND_API_KEY, etc.
+
+# rodar as migrations
+yarn prisma migrate dev
+
+# subir o servidor em modo dev
+yarn dev
 ```
 
-## Run tests
+A API sobe em `http://localhost:3000`, e a documentação interativa fica em `http://localhost:3000/docs`.
 
-```bash
-# unit tests
-$ yarn run test
+### Variáveis de ambiente
 
-# e2e tests
-$ yarn run test:e2e
+| Variável            | Descrição                                                       |
+| ------------------- | --------------------------------------------------------------- |
+| `DATABASE_URL`      | String de conexão do PostgreSQL                                 |
+| `JWT_ACCESS_SECRET` | Segredo usado pra assinar o access token                        |
+| `RESEND_API_KEY`    | Chave de API do Resend                                          |
+| `MAIL_FROM`         | Endereço de envio (formato `Nome <email@dominio.com>`)          |
+| `FRONTEND_URL`      | URL do frontend (usada em CORS e nos links dos e-mails)         |
+| `NODE_ENV`          | `development` ou `production` (afeta a flag `secure` do cookie) |
+| `PORT`              | Porta do servidor (default `3000`)                              |
 
-# test coverage
-$ yarn run test:cov
-```
+---
 
-## Deployment
+## 🗺️ Próximos passos
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- [ ] Endpoint de reenvio de e-mail de confirmação
+- [ ] Terminar a documentação do Swagger nos módulos restantes
+- [ ] Seed script pra popular o banco com dados de teste
+- [ ] Testes automatizados (começando pelos fluxos críticos de autenticação)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
+## 📝 Licença
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# backend-planeja-facil
+Este projeto está sob a licença [MIT](./LICENSE).
