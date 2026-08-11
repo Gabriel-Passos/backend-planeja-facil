@@ -8,8 +8,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { CreateYearDto } from './dto/create-year.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
-import { Year, YearMember, YearRole } from '@/src/common/types/prisma';
+import { Prisma, Year, YearMember, YearRole } from '@/src/common/types/prisma';
 import { UsersService } from '../users/users.service';
+import { UpdateYearDto } from './dto/update-year.dto';
+import { FindYearsQueryDto } from './dto/find-years-query.dto';
+import { buildPaginationMeta } from '@/src/common/utils/pagination.util';
+import type { PaginatedResult } from '@/src/common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class YearsService {
@@ -24,6 +28,11 @@ export class YearsService {
     });
 
     if (existing) {
+      if (existing.deletedAt) {
+        throw new ConflictException(
+          'Já existe um ano excluído com esse número. Restaure-o em vez de criar um novo.',
+        );
+      }
       throw new ConflictException('Você já criou um ano com esse número.');
     }
 
@@ -46,11 +55,65 @@ export class YearsService {
     });
   }
 
-  findAllForUser(userId: string): Promise<Year[]> {
-    return this.prisma.year.findMany({
-      where: { members: { some: { userId } } },
-      orderBy: { year: 'desc' },
+  async update(yearId: string, dto: UpdateYearDto): Promise<Year> {
+    const year = await this.prisma.year.findUnique({
+      where: { id: yearId },
     });
+
+    if (!year) {
+      throw new NotFoundException('Ano não encontrado.');
+    }
+
+    if (dto.year !== undefined && dto.year !== year.year) {
+      const conflict = await this.prisma.year.findUnique({
+        where: {
+          creatorId_year: { creatorId: year.creatorId, year: dto.year },
+        },
+      });
+
+      if (conflict) {
+        if (conflict.deletedAt) {
+          throw new ConflictException(
+            'Já existe um ano excluído com esse número.',
+          );
+        }
+        throw new ConflictException('Você já criou um ano com esse número.');
+      }
+    }
+
+    return this.prisma.year.update({
+      where: { id: yearId },
+      data: dto,
+    });
+  }
+
+  async findAllForUser(
+    userId: string,
+    query: FindYearsQueryDto,
+  ): Promise<PaginatedResult<Year>> {
+    const { page, limit, order, years } = query;
+
+    // Filtro no banco, nunca busca tudo pra filtrar depois em memória.
+    const where: Prisma.YearWhereInput = {
+      deletedAt: null,
+      members: { some: { userId } },
+      ...(years?.length ? { year: { in: years } } : {}),
+    };
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.year.findMany({
+        where,
+        orderBy: { year: order },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.year.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: buildPaginationMeta(page, limit, total),
+    };
   }
 
   async findOne(yearId: string) {
@@ -65,7 +128,7 @@ export class YearsService {
       },
     });
 
-    if (!year) {
+    if (!year || year.deletedAt) {
       throw new NotFoundException('Ano não encontrado.');
     }
 
@@ -73,7 +136,72 @@ export class YearsService {
   }
 
   async remove(yearId: string): Promise<void> {
+    await this.getActiveYearOrThrow(yearId);
+
+    await this.prisma.year.update({
+      where: { id: yearId },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  // Só lista anos onde o usuário é ADMIN — só quem administra
+  // pode restaurar, mesma regra de quem pode excluir.
+  findDeletedForUser(userId: string): Promise<Year[]> {
+    return this.prisma.year.findMany({
+      where: {
+        deletedAt: { not: null },
+        members: { some: { userId, role: YearRole.ADMIN } },
+      },
+      orderBy: { year: 'desc' },
+    });
+  }
+
+  async restore(yearId: string): Promise<Year> {
+    const year = await this.prisma.year.findUnique({
+      where: { id: yearId },
+    });
+
+    if (!year || !year.deletedAt) {
+      throw new NotFoundException('Ano não encontrado ou não está excluído.');
+    }
+
+    return this.prisma.year.update({
+      where: { id: yearId },
+      data: { deletedAt: null },
+    });
+  }
+
+  // Delete de verdade — só permitido se o ano já estiver na lixeira.
+  // O cascade do schema (onDelete: Cascade) cuida de apagar members,
+  // cards, incomes e expenses relacionados automaticamente.
+  async permanentlyDelete(yearId: string): Promise<void> {
+    const year = await this.prisma.year.findUnique({
+      where: { id: yearId },
+    });
+
+    if (!year) {
+      throw new NotFoundException('Ano não encontrado.');
+    }
+
+    if (!year.deletedAt) {
+      throw new ConflictException(
+        'Só é possível apagar definitivamente um ano que já está na lixeira. Exclua-o primeiro.',
+      );
+    }
+
     await this.prisma.year.delete({ where: { id: yearId } });
+  }
+
+  private async getActiveYearOrThrow(yearId: string): Promise<Year> {
+    const year = await this.prisma.year.findUnique({
+      where: { id: yearId },
+    });
+
+    if (!year || year.deletedAt) {
+      throw new NotFoundException('Ano não encontrado.');
+    }
+
+    return year;
   }
 
   async inviteMember(

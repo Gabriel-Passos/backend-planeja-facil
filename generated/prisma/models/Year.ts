@@ -40,6 +40,7 @@ export type YearMinAggregateOutputType = {
   creatorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type YearMaxAggregateOutputType = {
@@ -48,6 +49,7 @@ export type YearMaxAggregateOutputType = {
   creatorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type YearCountAggregateOutputType = {
@@ -56,6 +58,7 @@ export type YearCountAggregateOutputType = {
   creatorId: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
   _all: number
 }
 
@@ -74,6 +77,7 @@ export type YearMinAggregateInputType = {
   creatorId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type YearMaxAggregateInputType = {
@@ -82,6 +86,7 @@ export type YearMaxAggregateInputType = {
   creatorId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type YearCountAggregateInputType = {
@@ -90,6 +95,7 @@ export type YearCountAggregateInputType = {
   creatorId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
   _all?: true
 }
 
@@ -185,6 +191,7 @@ export type YearGroupByOutputType = {
   creatorId: string
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
   _count: YearCountAggregateOutputType | null
   _avg: YearAvgAggregateOutputType | null
   _sum: YearSumAggregateOutputType | null
@@ -216,6 +223,7 @@ export type YearWhereInput = {
   creatorId?: Prisma.StringFilter<"Year"> | string
   createdAt?: Prisma.DateTimeFilter<"Year"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Year"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Year"> | Date | string | null
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   members?: Prisma.YearMemberListRelationFilter
   cards?: Prisma.CardListRelationFilter
@@ -227,6 +235,7 @@ export type YearOrderByWithRelationInput = {
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
   members?: Prisma.YearMemberOrderByRelationAggregateInput
   cards?: Prisma.CardOrderByRelationAggregateInput
@@ -242,6 +251,7 @@ export type YearWhereUniqueInput = Prisma.AtLeast<{
   creatorId?: Prisma.StringFilter<"Year"> | string
   createdAt?: Prisma.DateTimeFilter<"Year"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Year"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Year"> | Date | string | null
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   members?: Prisma.YearMemberListRelationFilter
   cards?: Prisma.CardListRelationFilter
@@ -253,6 +263,7 @@ export type YearOrderByWithAggregationInput = {
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.YearCountOrderByAggregateInput
   _avg?: Prisma.YearAvgOrderByAggregateInput
   _max?: Prisma.YearMaxOrderByAggregateInput
@@ -269,6 +280,7 @@ export type YearScalarWhereWithAggregatesInput = {
   creatorId?: Prisma.StringWithAggregatesFilter<"Year"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Year"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Year"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Year"> | Date | string | null
 }
 
 export type YearCreateInput = {
@@ -276,6 +288,7 @@ export type YearCreateInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedYearsInput
   members?: Prisma.YearMemberCreateNestedManyWithoutYearInput
   cards?: Prisma.CardCreateNestedManyWithoutYearInput
@@ -287,6 +300,7 @@ export type YearUncheckedCreateInput = {
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   members?: Prisma.YearMemberUncheckedCreateNestedManyWithoutYearInput
   cards?: Prisma.CardUncheckedCreateNestedManyWithoutYearInput
 }
@@ -296,6 +310,7 @@ export type YearUpdateInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedYearsNestedInput
   members?: Prisma.YearMemberUpdateManyWithoutYearNestedInput
   cards?: Prisma.CardUpdateManyWithoutYearNestedInput
@@ -307,6 +322,7 @@ export type YearUncheckedUpdateInput = {
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.YearMemberUncheckedUpdateManyWithoutYearNestedInput
   cards?: Prisma.CardUncheckedUpdateManyWithoutYearNestedInput
 }
@@ -317,6 +333,7 @@ export type YearCreateManyInput = {
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type YearUpdateManyMutationInput = {
@@ -324,6 +341,7 @@ export type YearUpdateManyMutationInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type YearUncheckedUpdateManyInput = {
@@ -332,6 +350,7 @@ export type YearUncheckedUpdateManyInput = {
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type YearListRelationFilter = {
@@ -355,6 +374,7 @@ export type YearCountOrderByAggregateInput = {
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type YearAvgOrderByAggregateInput = {
@@ -367,6 +387,7 @@ export type YearMaxOrderByAggregateInput = {
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type YearMinOrderByAggregateInput = {
@@ -375,6 +396,7 @@ export type YearMinOrderByAggregateInput = {
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type YearSumOrderByAggregateInput = {
@@ -469,6 +491,7 @@ export type YearCreateWithoutCreatorInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   members?: Prisma.YearMemberCreateNestedManyWithoutYearInput
   cards?: Prisma.CardCreateNestedManyWithoutYearInput
 }
@@ -478,6 +501,7 @@ export type YearUncheckedCreateWithoutCreatorInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   members?: Prisma.YearMemberUncheckedCreateNestedManyWithoutYearInput
   cards?: Prisma.CardUncheckedCreateNestedManyWithoutYearInput
 }
@@ -517,6 +541,7 @@ export type YearScalarWhereInput = {
   creatorId?: Prisma.StringFilter<"Year"> | string
   createdAt?: Prisma.DateTimeFilter<"Year"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Year"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Year"> | Date | string | null
 }
 
 export type YearCreateWithoutMembersInput = {
@@ -524,6 +549,7 @@ export type YearCreateWithoutMembersInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedYearsInput
   cards?: Prisma.CardCreateNestedManyWithoutYearInput
 }
@@ -534,6 +560,7 @@ export type YearUncheckedCreateWithoutMembersInput = {
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   cards?: Prisma.CardUncheckedCreateNestedManyWithoutYearInput
 }
 
@@ -558,6 +585,7 @@ export type YearUpdateWithoutMembersInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedYearsNestedInput
   cards?: Prisma.CardUpdateManyWithoutYearNestedInput
 }
@@ -568,6 +596,7 @@ export type YearUncheckedUpdateWithoutMembersInput = {
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cards?: Prisma.CardUncheckedUpdateManyWithoutYearNestedInput
 }
 
@@ -576,6 +605,7 @@ export type YearCreateWithoutCardsInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedYearsInput
   members?: Prisma.YearMemberCreateNestedManyWithoutYearInput
 }
@@ -586,6 +616,7 @@ export type YearUncheckedCreateWithoutCardsInput = {
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   members?: Prisma.YearMemberUncheckedCreateNestedManyWithoutYearInput
 }
 
@@ -610,6 +641,7 @@ export type YearUpdateWithoutCardsInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedYearsNestedInput
   members?: Prisma.YearMemberUpdateManyWithoutYearNestedInput
 }
@@ -620,6 +652,7 @@ export type YearUncheckedUpdateWithoutCardsInput = {
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.YearMemberUncheckedUpdateManyWithoutYearNestedInput
 }
 
@@ -628,6 +661,7 @@ export type YearCreateManyCreatorInput = {
   year: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type YearUpdateWithoutCreatorInput = {
@@ -635,6 +669,7 @@ export type YearUpdateWithoutCreatorInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.YearMemberUpdateManyWithoutYearNestedInput
   cards?: Prisma.CardUpdateManyWithoutYearNestedInput
 }
@@ -644,6 +679,7 @@ export type YearUncheckedUpdateWithoutCreatorInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.YearMemberUncheckedUpdateManyWithoutYearNestedInput
   cards?: Prisma.CardUncheckedUpdateManyWithoutYearNestedInput
 }
@@ -653,6 +689,7 @@ export type YearUncheckedUpdateManyWithoutCreatorInput = {
   year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -701,6 +738,7 @@ export type YearSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   members?: boolean | Prisma.Year$membersArgs<ExtArgs>
   cards?: boolean | Prisma.Year$cardsArgs<ExtArgs>
@@ -713,6 +751,7 @@ export type YearSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["year"]>
 
@@ -722,6 +761,7 @@ export type YearSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["year"]>
 
@@ -731,9 +771,10 @@ export type YearSelectScalar = {
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }
 
-export type YearOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "year" | "creatorId" | "createdAt" | "updatedAt", ExtArgs["result"]["year"]>
+export type YearOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "year" | "creatorId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["year"]>
 export type YearInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   members?: boolean | Prisma.Year$membersArgs<ExtArgs>
@@ -760,6 +801,7 @@ export type $YearPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     creatorId: string
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
   }, ExtArgs["result"]["year"]>
   composites: {}
 }
@@ -1191,6 +1233,7 @@ export interface YearFieldRefs {
   readonly creatorId: Prisma.FieldRef<"Year", 'String'>
   readonly createdAt: Prisma.FieldRef<"Year", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Year", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"Year", 'DateTime'>
 }
     
 
