@@ -3,13 +3,18 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { YearsService } from './years.service';
 import { CreateYearDto } from './dto/create-year.dto';
+import { UpdateYearDto } from './dto/update-year.dto';
+import { FindYearsQueryDto } from './dto/find-years-query.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -29,9 +34,27 @@ export class YearsController {
     return this.yearsService.create(user.id, dto);
   }
 
+  // Só o ADMIN pode editar o ano
+  @Patch(':yearId')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  update(@Param('yearId') yearId: string, @Body() dto: UpdateYearDto) {
+    return this.yearsService.update(yearId, dto);
+  }
+
   @Get()
-  findAllForUser(@CurrentUser() user: AuthenticatedUser) {
-    return this.yearsService.findAllForUser(user.id);
+  findAllForUser(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: FindYearsQueryDto,
+  ) {
+    return this.yearsService.findAllForUser(user.id, query);
+  }
+
+  // Precisa vir ANTES de ':yearId' pra não ser interpretado como um id.
+  // Só mostra anos onde o usuário é ADMIN (mesma regra de quem pode excluir/restaurar).
+  @Get('deleted')
+  findDeletedForUser(@CurrentUser() user: AuthenticatedUser) {
+    return this.yearsService.findDeletedForUser(user.id);
   }
 
   // Qualquer papel (inclusive PARTICIPANTE) pode visualizar
@@ -47,6 +70,23 @@ export class YearsController {
   @YearRoles(YearRole.ADMIN)
   remove(@Param('yearId') yearId: string) {
     return this.yearsService.remove(yearId);
+  }
+
+  // Só o ADMIN pode restaurar
+  @Post(':yearId/restore')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  restore(@Param('yearId') yearId: string) {
+    return this.yearsService.restore(yearId);
+  }
+
+  // Só o ADMIN pode apagar de vez — e só funciona se já estiver na lixeira
+  @Delete(':yearId/permanent')
+  @UseGuards(YearRolesGuard)
+  @YearRoles(YearRole.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  permanentlyDelete(@Param('yearId') yearId: string) {
+    return this.yearsService.permanentlyDelete(yearId);
   }
 
   // Só o ADMIN pode convidar

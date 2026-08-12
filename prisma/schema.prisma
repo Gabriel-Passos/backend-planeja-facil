@@ -105,13 +105,15 @@ model Year {
   creatorId String
   creator   User   @relation("YearCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete -> permite restauração
 
   members YearMember[]
   cards   Card[]
 
   @@unique([creatorId, year]) // um usuário não cria o mesmo ano duas vezes
+  @@index([deletedAt])
   @@map("years")
 }
 
