@@ -15,6 +15,7 @@ import { YearsService } from './years.service';
 import { CreateYearDto } from './dto/create-year.dto';
 import { UpdateYearDto } from './dto/update-year.dto';
 import { FindYearsQueryDto } from './dto/find-years-query.dto';
+import { BulkYearIdsDto } from './dto/bulk-year-ids.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -32,6 +33,37 @@ export class YearsController {
   @Post()
   create(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateYearDto) {
     return this.yearsService.create(user.id, dto);
+  }
+
+  // ==========================================
+  // OPERAÇÕES EM MASSA
+  // ==========================================
+  // Precisam vir ANTES das rotas ':yearId/...' — senão, por exemplo,
+  // uma chamada a 'bulk/restore' seria interpretada como :yearId = "bulk"
+  // e cairia na rota de restore individual por engano.
+
+  @Post('bulk/remove')
+  bulkRemove(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: BulkYearIdsDto,
+  ) {
+    return this.yearsService.removeMany(user.id, dto);
+  }
+
+  @Post('bulk/restore')
+  bulkRestore(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: BulkYearIdsDto,
+  ) {
+    return this.yearsService.restoreMany(user.id, dto);
+  }
+
+  @Post('bulk/permanent-delete')
+  bulkPermanentlyDelete(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: BulkYearIdsDto,
+  ) {
+    return this.yearsService.permanentlyDeleteMany(user.id, dto);
   }
 
   // Só o ADMIN pode editar o ano
