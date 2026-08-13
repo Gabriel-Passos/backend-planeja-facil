@@ -12,8 +12,10 @@ import { Prisma, Year, YearMember, YearRole } from '@/src/common/types/prisma';
 import { UsersService } from '../users/users.service';
 import { UpdateYearDto } from './dto/update-year.dto';
 import { FindYearsQueryDto } from './dto/find-years-query.dto';
+import { BulkYearIdsDto } from './dto/bulk-year-ids.dto';
 import { buildPaginationMeta } from '@/src/common/utils/pagination.util';
 import type { PaginatedResult } from '@/src/common/interfaces/paginated-result.interface';
+import type { BulkOperationResult } from './interface/bulk-operation-result.interface';
 
 @Injectable()
 export class YearsService {
@@ -202,6 +204,85 @@ export class YearsService {
     }
 
     return year;
+  }
+
+  // ==========================================
+  // OPERAÇÕES EM MASSA
+  // ==========================================
+  // Processamento sequencial e por item, não uma única transação —
+  // o requisito pede sucesso parcial (quais itens falharam e quais não),
+  // o que uma transação única inviabilizaria (qualquer erro reverteria
+  // o lote inteiro).
+
+  async removeMany(
+    userId: string,
+    dto: BulkYearIdsDto,
+  ): Promise<BulkOperationResult> {
+    return this.processBulk(dto.yearIds, async (yearId) => {
+      await this.assertIsYearAdmin(userId, yearId);
+      await this.remove(yearId);
+    });
+  }
+
+  async restoreMany(
+    userId: string,
+    dto: BulkYearIdsDto,
+  ): Promise<BulkOperationResult> {
+    return this.processBulk(dto.yearIds, async (yearId) => {
+      await this.assertIsYearAdmin(userId, yearId);
+      await this.restore(yearId);
+    });
+  }
+
+  async permanentlyDeleteMany(
+    userId: string,
+    dto: BulkYearIdsDto,
+  ): Promise<BulkOperationResult> {
+    return this.processBulk(dto.yearIds, async (yearId) => {
+      await this.assertIsYearAdmin(userId, yearId);
+      await this.permanentlyDelete(yearId);
+    });
+  }
+
+  private async processBulk(
+    yearIds: string[],
+    operation: (yearId: string) => Promise<void>,
+  ): Promise<BulkOperationResult> {
+    const succeeded: string[] = [];
+    const failed: { id: string; reason: string }[] = [];
+
+    for (const yearId of yearIds) {
+      try {
+        await operation(yearId);
+        succeeded.push(yearId);
+      } catch (error) {
+        failed.push({ id: yearId, reason: this.extractErrorMessage(error) });
+      }
+    }
+
+    return { succeeded, failed };
+  }
+
+  private async assertIsYearAdmin(
+    userId: string,
+    yearId: string,
+  ): Promise<void> {
+    const membership = await this.prisma.yearMember.findUnique({
+      where: { yearId_userId: { yearId, userId } },
+    });
+
+    if (!membership || membership.role !== YearRole.ADMIN) {
+      throw new ForbiddenException(
+        'Você não tem permissão para essa ação neste ano.',
+      );
+    }
+  }
+
+  private extractErrorMessage(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return 'Erro desconhecido.';
   }
 
   async inviteMember(
