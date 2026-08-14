@@ -15,7 +15,22 @@ import { FindYearsQueryDto } from './dto/find-years-query.dto';
 import { BulkYearIdsDto } from './dto/bulk-year-ids.dto';
 import { buildPaginationMeta } from '@/src/common/utils/pagination.util';
 import type { PaginatedResult } from '@/src/common/interfaces/paginated-result.interface';
-import type { BulkOperationResult } from './interface/bulk-operation-result.interface';
+import { BulkOperationResult } from './interface/bulk-operation-result.interface';
+
+const MONTH_NAMES = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+];
 
 @Injectable()
 export class YearsService {
@@ -38,7 +53,8 @@ export class YearsService {
       throw new ConflictException('Você já criou um ano com esse número.');
     }
 
-    // Cria o ano e já registra o criador como ADMIN numa única transação.
+    // Cria o ano, registra o criador como ADMIN, e já popula os 12 meses
+    // vazios — tudo na mesma transação (ou tudo é criado, ou nada é).
     return this.prisma.$transaction(async (tx) => {
       const year = await tx.year.create({
         data: { year: dto.year, creatorId: userId },
@@ -51,6 +67,17 @@ export class YearsService {
           role: YearRole.ADMIN,
           acceptedAt: new Date(),
         },
+      });
+
+      // 12 cards vazios, um por mês — sem incomes/expenses, então o
+      // status calculado de cada um começa como EMPTY.
+      await tx.card.createMany({
+        data: MONTH_NAMES.map((name, index) => ({
+          title: name,
+          month: index + 1,
+          yearId: year.id,
+          createdById: userId,
+        })),
       });
 
       return year;

@@ -1,14 +1,11 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateMonthCardDto } from './dto/create-month-card.dto';
-import { UpdateMonthCardDto } from './dto/update-month-card.dto';
 import type { Card, Income, Expense } from '@/src/common/types/prisma';
+import { MonthStatus } from './enums/month-status.enum';
+import { calculateMonthStatus } from './utils/calculate-month-status.util';
+import type { YearMonthsStatusResponse } from './interfaces/year-months-status.interface';
 
-const MAX_CARDS_PER_YEAR = 12;
+const MONTHS_IN_YEAR = 12;
 
 type CardWithEntries = Card & {
   incomes?: Income[];
@@ -19,46 +16,17 @@ type CardWithEntries = Card & {
 export class MonthCardsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateMonthCardDto, yearId: string) {
-    const existingCard = await this.prisma.card.findUnique({
-      where: { yearId_month: { yearId, month: dto.month } },
-    });
+  // Cards não são mais criados/editados/removidos individualmente — os 12
+  // já existem desde a criação do ano (ver YearsService.create). Este
+  // service só lê o que já existe.
 
-    if (existingCard) {
-      if (existingCard.deletedAt) {
-        throw new ConflictException(
-          'Já existe um card excluído para esse mês. Restaure-o em vez de criar um novo.',
-        );
-      }
-      throw new ConflictException('Já existe um card para esse mês.');
-    }
-
-    const card = await this.prisma.card.create({
-      data: {
-        title: dto.title,
-        description: dto.description,
-        month: dto.month,
-        yearId,
-        createdById: userId,
-        incomes: dto.incomes?.length
-          ? { create: dto.incomes.map((income) => ({ ...income })) }
-          : undefined,
-        expenses: dto.expenses?.length
-          ? { create: dto.expenses.map((expense) => ({ ...expense })) }
-          : undefined,
-      },
-      include: { incomes: true, expenses: true },
-    });
-
-    return this.attachBalance(card);
-  }
-
-  async findDeletedByYearId(yearId: string) {
+  async findByYearId(yearId: string) {
     const cards = await this.prisma.card.findMany({
-      where: { yearId, deletedAt: { not: null } },
+      where: { yearId },
+      include: { incomes: true, expenses: true },
       orderBy: { month: 'asc' },
     });
-    return cards;
+    return cards.map((card) => this.attachBalance(card));
   }
 
   async findById(yearId: string, cardId: string) {
@@ -67,88 +35,62 @@ export class MonthCardsService {
       include: { incomes: true, expenses: true },
     });
 
-    if (!card || card.yearId !== yearId || card.deletedAt) {
+    if (!card || card.yearId !== yearId) {
       throw new NotFoundException('Card não encontrado.');
     }
 
     return this.attachBalance(card);
   }
 
-  async findByYearId(yearId: string) {
+  async getYearMonthsStatus(yearId: string): Promise<YearMonthsStatusResponse> {
+    const year = await this.prisma.year.findUnique({
+      where: { id: yearId },
+    });
+
+    if (!year || year.deletedAt) {
+      throw new NotFoundException('Ano não encontrado.');
+    }
+
+    // Só o id + as contagens de incomes/expenses — não precisa trazer
+    // as listas inteiras, nem title/description, pra montar o grid.
     const cards = await this.prisma.card.findMany({
-      where: { yearId, deletedAt: null },
-      include: { incomes: true, expenses: true },
-      orderBy: { month: 'asc' },
-    });
-    return cards.map((card) => this.attachBalance(card));
-  }
-
-  async delete(yearId: string, cardId: string): Promise<void> {
-    const card = await this.prisma.card.findUnique({
-      where: { id: cardId },
+      where: { yearId },
+      select: {
+        id: true,
+        month: true,
+        _count: { select: { incomes: true, expenses: true } },
+      },
     });
 
-    if (!card || card.yearId !== yearId || card.deletedAt) {
-      throw new NotFoundException('Card não encontrado.');
-    }
+    const entriesByMonth = new Map<
+      number,
+      { id: string; status: MonthStatus }
+    >();
 
-    await this.prisma.card.update({
-      where: { id: cardId },
-      data: { deletedAt: new Date() },
-    });
-  }
-
-  async restore(yearId: string, cardId: string): Promise<void> {
-    const card = await this.prisma.card.findUnique({
-      where: { id: cardId },
-    });
-
-    if (!card || card.yearId !== yearId || !card.deletedAt) {
-      throw new NotFoundException('Card não encontrado ou não está excluído.');
-    }
-
-    const activeCount = await this.prisma.card.count({
-      where: { yearId, deletedAt: null },
-    });
-
-    if (activeCount >= MAX_CARDS_PER_YEAR) {
-      throw new ConflictException(
-        'Este ano já atingiu o limite de 12 cards ativos. Remova ou restaure outro antes.',
-      );
-    }
-
-    await this.prisma.card.update({
-      where: { id: cardId },
-      data: { deletedAt: null },
-    });
-  }
-
-  async update(yearId: string, cardId: string, dto: UpdateMonthCardDto) {
-    const card = await this.prisma.card.findUnique({
-      where: { id: cardId },
-    });
-
-    if (!card || card.yearId !== yearId || card.deletedAt) {
-      throw new NotFoundException('Card não encontrado.');
-    }
-
-    if (dto.month !== undefined) {
-      const conflict = await this.prisma.card.findUnique({
-        where: { yearId_month: { yearId, month: dto.month } },
+    for (const card of cards) {
+      entriesByMonth.set(card.month, {
+        id: card.id,
+        status: calculateMonthStatus(
+          card._count.incomes > 0,
+          card._count.expenses > 0,
+        ),
       });
-
-      if (conflict && conflict.id !== cardId) {
-        throw new ConflictException('Já existe um card para esse mês.');
-      }
     }
 
-    const updated = await this.prisma.card.update({
-      where: { id: cardId },
-      data: dto,
-      include: { incomes: true, expenses: true },
+    // Hoje todo ano nasce com os 12 cards já criados, então "id: null"
+    // só deveria acontecer em dados antigos (de antes dessa mudança).
+    // Mantemos o fallback por segurança, mas na prática não deve ocorrer.
+    const months = Array.from({ length: MONTHS_IN_YEAR }, (_, index) => {
+      const month = index + 1;
+      const entry = entriesByMonth.get(month);
+      return {
+        id: entry?.id ?? null,
+        month,
+        status: entry?.status ?? MonthStatus.EMPTY,
+      };
     });
 
-    return this.attachBalance(updated);
+    return { year: year.year, months };
   }
 
   private attachBalance(card: CardWithEntries) {
