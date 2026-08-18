@@ -1213,6 +1213,8 @@ export const CardScalarFieldEnum = {
   month: 'month',
   yearId: 'yearId',
   createdById: 'createdById',
+  statusMode: 'statusMode',
+  manualStatus: 'manualStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1226,7 +1228,12 @@ export const IncomeScalarFieldEnum = {
   description: 'description',
   type: 'type',
   value: 'value',
+  date: 'date',
   cardId: 'cardId',
+  recurrenceType: 'recurrenceType',
+  groupId: 'groupId',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1239,8 +1246,12 @@ export const ExpenseScalarFieldEnum = {
   name: 'name',
   category: 'category',
   value: 'value',
-  installments: 'installments',
+  date: 'date',
   cardId: 'cardId',
+  recurrenceType: 'recurrenceType',
+  groupId: 'groupId',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1342,6 +1353,34 @@ export type ListEnumYearRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
+ * Reference to a field of type 'CardStatusMode'
+ */
+export type EnumCardStatusModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CardStatusMode'>
+    
+
+
+/**
+ * Reference to a field of type 'CardStatusMode[]'
+ */
+export type ListEnumCardStatusModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CardStatusMode[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MonthStatus'
+ */
+export type EnumMonthStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonthStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MonthStatus[]'
+ */
+export type ListEnumMonthStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonthStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'IncomeType'
  */
 export type EnumIncomeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncomeType'>
@@ -1366,6 +1405,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RecurrenceType'
+ */
+export type EnumRecurrenceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RecurrenceType'>
+    
+
+
+/**
+ * Reference to a field of type 'RecurrenceType[]'
+ */
+export type ListEnumRecurrenceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RecurrenceType[]'>
     
 
 

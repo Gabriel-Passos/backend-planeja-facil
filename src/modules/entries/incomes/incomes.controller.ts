@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -18,6 +16,7 @@ import {
 import { IncomesService } from './incomes.service';
 import { CreateIncomeDto } from './dto/create-income.dto';
 import { UpdateIncomeDto } from './dto/update-income.dto';
+import { BulkEntryIdsDto } from '../dto/bulk-entry-ids.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { YearRolesGuard } from '@/src/common/guards/year-roles.guard';
 import { YearRoles } from '@/src/common/decorators/year-roles.decorator';
@@ -43,6 +42,17 @@ export class IncomesController {
     return this.incomesService.create(yearId, cardId, dto);
   }
 
+  @Post('bulk-remove')
+  @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
+  @ApiOperation({ summary: 'Remove várias rendas de uma vez' })
+  removeMany(
+    @Param('yearId') yearId: string,
+    @Param('cardId') cardId: string,
+    @Body() dto: BulkEntryIdsDto,
+  ) {
+    return this.incomesService.removeMany(yearId, cardId, dto.ids);
+  }
+
   @Patch(':incomeId')
   @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
   @ApiOperation({ summary: 'Atualiza uma renda específica' })
@@ -58,8 +68,10 @@ export class IncomesController {
 
   @Delete(':incomeId')
   @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Remove uma renda específica' })
+  @ApiOperation({
+    summary:
+      'Remove uma renda específica — se for parcela/recorrência, remove o grupo inteiro',
+  })
   @ApiParam({ name: 'incomeId', description: 'ID da renda' })
   remove(
     @Param('yearId') yearId: string,

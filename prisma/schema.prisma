@@ -139,6 +139,17 @@ model YearMember {
 /// CARD (MÊS)
 /// ==========================================
 
+enum MonthStatus {
+  EMPTY
+  PARTIAL
+  COMPLETED
+}
+
+enum CardStatusMode {
+  AUTOMATIC
+  MANUAL
+}
+
 model Card {
   id          String  @id @default(uuid())
   title       String
@@ -150,6 +161,12 @@ model Card {
 
   createdById String
   createdBy   User   @relation("CardCreator", fields: [createdById], references: [id])
+
+  // Status: por padrão (AUTOMATIC) é sempre calculado a partir de
+  // incomes/expenses. Se o usuário sobrescrever manualmente (MANUAL),
+  // manualStatus prevalece até ele voltar pro modo automático.
+  statusMode   CardStatusMode @default(AUTOMATIC)
+  manualStatus MonthStatus?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -169,19 +186,35 @@ enum IncomeType {
   OUTROS
 }
 
+enum RecurrenceType {
+  NONE
+  INSTALLMENT
+  RECURRING
+}
+
 model Income {
   id          String     @id @default(uuid())
   description String
   type        IncomeType @default(SALARIO)
   value       Decimal    @db.Decimal(12, 2)
+  date        DateTime // dia do lançamento — precisa cair no mês/ano do card (validado na aplicação)
 
   cardId String
   card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Agrupamento de parcelas/recorrência — groupId é o mesmo em todos os
+  // registros gerados pela mesma operação (seja parcela ou ocorrência
+  // recorrente). Sem groupId = lançamento avulso comum (RecurrenceType.NONE).
+  recurrenceType    RecurrenceType @default(NONE)
+  groupId           String?
+  installmentNumber Int? // 1, 2, 3... (só quando INSTALLMENT)
+  totalInstallments Int? // 24 (só quando INSTALLMENT)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([cardId])
+  @@index([groupId])
   @@map("incomes")
 }
 
@@ -195,22 +228,39 @@ enum ExpenseCategory {
   VESTUARIO
   DIVIDAS
   INVESTIMENTOS
+  COMPRAS
+  ASSINATURAS
+  PETS
+  PRESENTES
+  IMPOSTOS
+  SEGUROS
+  VIAGEM
+  CUIDADOS_PESSOAIS
+  MANUTENCAO
+  DOACOES
   OUTROS
 }
 
 model Expense {
-  id           String          @id @default(uuid())
-  name         String
-  category     ExpenseCategory
-  value        Decimal         @db.Decimal(12, 2)
-  installments Int             @default(1) // quantidade de parcelas
+  id       String          @id @default(uuid())
+  name     String
+  category ExpenseCategory
+  value    Decimal         @db.Decimal(12, 2)
+  date     DateTime // dia do lançamento — precisa cair no mês/ano do card (validado na aplicação)
 
   cardId String
   card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Mesmo padrão do Income — ver comentário lá.
+  recurrenceType    RecurrenceType @default(NONE)
+  groupId           String?
+  installmentNumber Int?
+  totalInstallments Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([cardId])
+  @@index([groupId])
   @@map("expenses")
 }

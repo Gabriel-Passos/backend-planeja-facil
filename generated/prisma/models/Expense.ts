@@ -28,12 +28,14 @@ export type AggregateExpense = {
 
 export type ExpenseAvgAggregateOutputType = {
   value: runtime.Decimal | null
-  installments: number | null
+  installmentNumber: number | null
+  totalInstallments: number | null
 }
 
 export type ExpenseSumAggregateOutputType = {
   value: runtime.Decimal | null
-  installments: number | null
+  installmentNumber: number | null
+  totalInstallments: number | null
 }
 
 export type ExpenseMinAggregateOutputType = {
@@ -41,8 +43,12 @@ export type ExpenseMinAggregateOutputType = {
   name: string | null
   category: $Enums.ExpenseCategory | null
   value: runtime.Decimal | null
-  installments: number | null
+  date: Date | null
   cardId: string | null
+  recurrenceType: $Enums.RecurrenceType | null
+  groupId: string | null
+  installmentNumber: number | null
+  totalInstallments: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,8 +58,12 @@ export type ExpenseMaxAggregateOutputType = {
   name: string | null
   category: $Enums.ExpenseCategory | null
   value: runtime.Decimal | null
-  installments: number | null
+  date: Date | null
   cardId: string | null
+  recurrenceType: $Enums.RecurrenceType | null
+  groupId: string | null
+  installmentNumber: number | null
+  totalInstallments: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,8 +73,12 @@ export type ExpenseCountAggregateOutputType = {
   name: number
   category: number
   value: number
-  installments: number
+  date: number
   cardId: number
+  recurrenceType: number
+  groupId: number
+  installmentNumber: number
+  totalInstallments: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -73,12 +87,14 @@ export type ExpenseCountAggregateOutputType = {
 
 export type ExpenseAvgAggregateInputType = {
   value?: true
-  installments?: true
+  installmentNumber?: true
+  totalInstallments?: true
 }
 
 export type ExpenseSumAggregateInputType = {
   value?: true
-  installments?: true
+  installmentNumber?: true
+  totalInstallments?: true
 }
 
 export type ExpenseMinAggregateInputType = {
@@ -86,8 +102,12 @@ export type ExpenseMinAggregateInputType = {
   name?: true
   category?: true
   value?: true
-  installments?: true
+  date?: true
   cardId?: true
+  recurrenceType?: true
+  groupId?: true
+  installmentNumber?: true
+  totalInstallments?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -97,8 +117,12 @@ export type ExpenseMaxAggregateInputType = {
   name?: true
   category?: true
   value?: true
-  installments?: true
+  date?: true
   cardId?: true
+  recurrenceType?: true
+  groupId?: true
+  installmentNumber?: true
+  totalInstallments?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -108,8 +132,12 @@ export type ExpenseCountAggregateInputType = {
   name?: true
   category?: true
   value?: true
-  installments?: true
+  date?: true
   cardId?: true
+  recurrenceType?: true
+  groupId?: true
+  installmentNumber?: true
+  totalInstallments?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -206,8 +234,12 @@ export type ExpenseGroupByOutputType = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal
-  installments: number
+  date: Date
   cardId: string
+  recurrenceType: $Enums.RecurrenceType
+  groupId: string | null
+  installmentNumber: number | null
+  totalInstallments: number | null
   createdAt: Date
   updatedAt: Date
   _count: ExpenseCountAggregateOutputType | null
@@ -240,8 +272,12 @@ export type ExpenseWhereInput = {
   name?: Prisma.StringFilter<"Expense"> | string
   category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
   value?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFilter<"Expense"> | number
+  date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   cardId?: Prisma.StringFilter<"Expense"> | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFilter<"Expense"> | $Enums.RecurrenceType
+  groupId?: Prisma.StringNullableFilter<"Expense"> | string | null
+  installmentNumber?: Prisma.IntNullableFilter<"Expense"> | number | null
+  totalInstallments?: Prisma.IntNullableFilter<"Expense"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   card?: Prisma.XOR<Prisma.CardScalarRelationFilter, Prisma.CardWhereInput>
@@ -252,8 +288,12 @@ export type ExpenseOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   cardId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   card?: Prisma.CardOrderByWithRelationInput
@@ -267,8 +307,12 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Expense"> | string
   category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
   value?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFilter<"Expense"> | number
+  date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   cardId?: Prisma.StringFilter<"Expense"> | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFilter<"Expense"> | $Enums.RecurrenceType
+  groupId?: Prisma.StringNullableFilter<"Expense"> | string | null
+  installmentNumber?: Prisma.IntNullableFilter<"Expense"> | number | null
+  totalInstallments?: Prisma.IntNullableFilter<"Expense"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   card?: Prisma.XOR<Prisma.CardScalarRelationFilter, Prisma.CardWhereInput>
@@ -279,8 +323,12 @@ export type ExpenseOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   cardId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ExpenseCountOrderByAggregateInput
@@ -298,8 +346,12 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   category?: Prisma.EnumExpenseCategoryWithAggregatesFilter<"Expense"> | $Enums.ExpenseCategory
   value?: Prisma.DecimalWithAggregatesFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntWithAggregatesFilter<"Expense"> | number
+  date?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   cardId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeWithAggregatesFilter<"Expense"> | $Enums.RecurrenceType
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  installmentNumber?: Prisma.IntNullableWithAggregatesFilter<"Expense"> | number | null
+  totalInstallments?: Prisma.IntNullableWithAggregatesFilter<"Expense"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
 }
@@ -309,7 +361,11 @@ export type ExpenseCreateInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   card: Prisma.CardCreateNestedOneWithoutExpensesInput
@@ -320,8 +376,12 @@ export type ExpenseUncheckedCreateInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
   cardId: string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -331,7 +391,11 @@ export type ExpenseUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   card?: Prisma.CardUpdateOneRequiredWithoutExpensesNestedInput
@@ -342,8 +406,12 @@ export type ExpenseUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cardId?: Prisma.StringFieldUpdateOperationsInput | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -353,8 +421,12 @@ export type ExpenseCreateManyInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
   cardId: string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -364,7 +436,11 @@ export type ExpenseUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -374,8 +450,12 @@ export type ExpenseUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cardId?: Prisma.StringFieldUpdateOperationsInput | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -395,15 +475,20 @@ export type ExpenseCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   cardId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ExpenseAvgOrderByAggregateInput = {
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrder
 }
 
 export type ExpenseMaxOrderByAggregateInput = {
@@ -411,8 +496,12 @@ export type ExpenseMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   cardId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -422,15 +511,20 @@ export type ExpenseMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   cardId?: Prisma.SortOrder
+  recurrenceType?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ExpenseSumOrderByAggregateInput = {
   value?: Prisma.SortOrder
-  installments?: Prisma.SortOrder
+  installmentNumber?: Prisma.SortOrder
+  totalInstallments?: Prisma.SortOrder
 }
 
 export type ExpenseCreateNestedManyWithoutCardInput = {
@@ -484,7 +578,11 @@ export type ExpenseCreateWithoutCardInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -494,7 +592,11 @@ export type ExpenseUncheckedCreateWithoutCardInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -533,8 +635,12 @@ export type ExpenseScalarWhereInput = {
   name?: Prisma.StringFilter<"Expense"> | string
   category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
   value?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFilter<"Expense"> | number
+  date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   cardId?: Prisma.StringFilter<"Expense"> | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFilter<"Expense"> | $Enums.RecurrenceType
+  groupId?: Prisma.StringNullableFilter<"Expense"> | string | null
+  installmentNumber?: Prisma.IntNullableFilter<"Expense"> | number | null
+  totalInstallments?: Prisma.IntNullableFilter<"Expense"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
 }
@@ -544,7 +650,11 @@ export type ExpenseCreateManyCardInput = {
   name: string
   category: $Enums.ExpenseCategory
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: number
+  date: Date | string
+  recurrenceType?: $Enums.RecurrenceType
+  groupId?: string | null
+  installmentNumber?: number | null
+  totalInstallments?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -554,7 +664,11 @@ export type ExpenseUpdateWithoutCardInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -564,7 +678,11 @@ export type ExpenseUncheckedUpdateWithoutCardInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -574,7 +692,11 @@ export type ExpenseUncheckedUpdateManyWithoutCardInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  installments?: Prisma.IntFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurrenceType?: Prisma.EnumRecurrenceTypeFieldUpdateOperationsInput | $Enums.RecurrenceType
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalInstallments?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -586,8 +708,12 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   category?: boolean
   value?: boolean
-  installments?: boolean
+  date?: boolean
   cardId?: boolean
+  recurrenceType?: boolean
+  groupId?: boolean
+  installmentNumber?: boolean
+  totalInstallments?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   card?: boolean | Prisma.CardDefaultArgs<ExtArgs>
@@ -598,8 +724,12 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   category?: boolean
   value?: boolean
-  installments?: boolean
+  date?: boolean
   cardId?: boolean
+  recurrenceType?: boolean
+  groupId?: boolean
+  installmentNumber?: boolean
+  totalInstallments?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   card?: boolean | Prisma.CardDefaultArgs<ExtArgs>
@@ -610,8 +740,12 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   category?: boolean
   value?: boolean
-  installments?: boolean
+  date?: boolean
   cardId?: boolean
+  recurrenceType?: boolean
+  groupId?: boolean
+  installmentNumber?: boolean
+  totalInstallments?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   card?: boolean | Prisma.CardDefaultArgs<ExtArgs>
@@ -622,13 +756,17 @@ export type ExpenseSelectScalar = {
   name?: boolean
   category?: boolean
   value?: boolean
-  installments?: boolean
+  date?: boolean
   cardId?: boolean
+  recurrenceType?: boolean
+  groupId?: boolean
+  installmentNumber?: boolean
+  totalInstallments?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "category" | "value" | "installments" | "cardId" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "category" | "value" | "date" | "cardId" | "recurrenceType" | "groupId" | "installmentNumber" | "totalInstallments" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   card?: boolean | Prisma.CardDefaultArgs<ExtArgs>
 }
@@ -649,8 +787,12 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     name: string
     category: $Enums.ExpenseCategory
     value: runtime.Decimal
-    installments: number
+    date: Date
     cardId: string
+    recurrenceType: $Enums.RecurrenceType
+    groupId: string | null
+    installmentNumber: number | null
+    totalInstallments: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["expense"]>
@@ -1081,8 +1223,12 @@ export interface ExpenseFieldRefs {
   readonly name: Prisma.FieldRef<"Expense", 'String'>
   readonly category: Prisma.FieldRef<"Expense", 'ExpenseCategory'>
   readonly value: Prisma.FieldRef<"Expense", 'Decimal'>
-  readonly installments: Prisma.FieldRef<"Expense", 'Int'>
+  readonly date: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly cardId: Prisma.FieldRef<"Expense", 'String'>
+  readonly recurrenceType: Prisma.FieldRef<"Expense", 'RecurrenceType'>
+  readonly groupId: Prisma.FieldRef<"Expense", 'String'>
+  readonly installmentNumber: Prisma.FieldRef<"Expense", 'Int'>
+  readonly totalInstallments: Prisma.FieldRef<"Expense", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Expense", 'DateTime'>
 }

@@ -18,6 +18,23 @@ export const YearRole = {
 export type YearRole = (typeof YearRole)[keyof typeof YearRole]
 
 
+export const MonthStatus = {
+  EMPTY: 'EMPTY',
+  PARTIAL: 'PARTIAL',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type MonthStatus = (typeof MonthStatus)[keyof typeof MonthStatus]
+
+
+export const CardStatusMode = {
+  AUTOMATIC: 'AUTOMATIC',
+  MANUAL: 'MANUAL'
+} as const
+
+export type CardStatusMode = (typeof CardStatusMode)[keyof typeof CardStatusMode]
+
+
 export const IncomeType = {
   SALARIO: 'SALARIO',
   RENDA_EXTRA: 'RENDA_EXTRA',
@@ -25,6 +42,15 @@ export const IncomeType = {
 } as const
 
 export type IncomeType = (typeof IncomeType)[keyof typeof IncomeType]
+
+
+export const RecurrenceType = {
+  NONE: 'NONE',
+  INSTALLMENT: 'INSTALLMENT',
+  RECURRING: 'RECURRING'
+} as const
+
+export type RecurrenceType = (typeof RecurrenceType)[keyof typeof RecurrenceType]
 
 
 export const ExpenseCategory = {
@@ -37,6 +63,16 @@ export const ExpenseCategory = {
   VESTUARIO: 'VESTUARIO',
   DIVIDAS: 'DIVIDAS',
   INVESTIMENTOS: 'INVESTIMENTOS',
+  COMPRAS: 'COMPRAS',
+  ASSINATURAS: 'ASSINATURAS',
+  PETS: 'PETS',
+  PRESENTES: 'PRESENTES',
+  IMPOSTOS: 'IMPOSTOS',
+  SEGUROS: 'SEGUROS',
+  VIAGEM: 'VIAGEM',
+  CUIDADOS_PESSOAIS: 'CUIDADOS_PESSOAIS',
+  MANUTENCAO: 'MANUTENCAO',
+  DOACOES: 'DOACOES',
   OUTROS: 'OUTROS'
 } as const
 

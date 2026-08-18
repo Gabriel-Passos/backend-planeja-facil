@@ -41,6 +41,8 @@ export type CardMinAggregateOutputType = {
   month: number | null
   yearId: string | null
   createdById: string | null
+  statusMode: $Enums.CardStatusMode | null
+  manualStatus: $Enums.MonthStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -53,6 +55,8 @@ export type CardMaxAggregateOutputType = {
   month: number | null
   yearId: string | null
   createdById: string | null
+  statusMode: $Enums.CardStatusMode | null
+  manualStatus: $Enums.MonthStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -65,6 +69,8 @@ export type CardCountAggregateOutputType = {
   month: number
   yearId: number
   createdById: number
+  statusMode: number
+  manualStatus: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -87,6 +93,8 @@ export type CardMinAggregateInputType = {
   month?: true
   yearId?: true
   createdById?: true
+  statusMode?: true
+  manualStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -99,6 +107,8 @@ export type CardMaxAggregateInputType = {
   month?: true
   yearId?: true
   createdById?: true
+  statusMode?: true
+  manualStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -111,6 +121,8 @@ export type CardCountAggregateInputType = {
   month?: true
   yearId?: true
   createdById?: true
+  statusMode?: true
+  manualStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -210,6 +222,8 @@ export type CardGroupByOutputType = {
   month: number
   yearId: string
   createdById: string
+  statusMode: $Enums.CardStatusMode
+  manualStatus: $Enums.MonthStatus | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -245,6 +259,8 @@ export type CardWhereInput = {
   month?: Prisma.IntFilter<"Card"> | number
   yearId?: Prisma.StringFilter<"Card"> | string
   createdById?: Prisma.StringFilter<"Card"> | string
+  statusMode?: Prisma.EnumCardStatusModeFilter<"Card"> | $Enums.CardStatusMode
+  manualStatus?: Prisma.EnumMonthStatusNullableFilter<"Card"> | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Card"> | Date | string | null
@@ -261,6 +277,8 @@ export type CardOrderByWithRelationInput = {
   month?: Prisma.SortOrder
   yearId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  statusMode?: Prisma.SortOrder
+  manualStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -281,6 +299,8 @@ export type CardWhereUniqueInput = Prisma.AtLeast<{
   month?: Prisma.IntFilter<"Card"> | number
   yearId?: Prisma.StringFilter<"Card"> | string
   createdById?: Prisma.StringFilter<"Card"> | string
+  statusMode?: Prisma.EnumCardStatusModeFilter<"Card"> | $Enums.CardStatusMode
+  manualStatus?: Prisma.EnumMonthStatusNullableFilter<"Card"> | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Card"> | Date | string | null
@@ -297,6 +317,8 @@ export type CardOrderByWithAggregationInput = {
   month?: Prisma.SortOrder
   yearId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  statusMode?: Prisma.SortOrder
+  manualStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -317,6 +339,8 @@ export type CardScalarWhereWithAggregatesInput = {
   month?: Prisma.IntWithAggregatesFilter<"Card"> | number
   yearId?: Prisma.StringWithAggregatesFilter<"Card"> | string
   createdById?: Prisma.StringWithAggregatesFilter<"Card"> | string
+  statusMode?: Prisma.EnumCardStatusModeWithAggregatesFilter<"Card"> | $Enums.CardStatusMode
+  manualStatus?: Prisma.EnumMonthStatusNullableWithAggregatesFilter<"Card"> | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Card"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Card"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Card"> | Date | string | null
@@ -327,6 +351,8 @@ export type CardCreateInput = {
   title: string
   description?: string | null
   month: number
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -343,6 +369,8 @@ export type CardUncheckedCreateInput = {
   month: number
   yearId: string
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -355,6 +383,8 @@ export type CardUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -371,6 +401,8 @@ export type CardUncheckedUpdateInput = {
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -385,6 +417,8 @@ export type CardCreateManyInput = {
   month: number
   yearId: string
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -395,6 +429,8 @@ export type CardUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -407,6 +443,8 @@ export type CardUncheckedUpdateManyInput = {
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -434,6 +472,8 @@ export type CardCountOrderByAggregateInput = {
   month?: Prisma.SortOrder
   yearId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  statusMode?: Prisma.SortOrder
+  manualStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -450,6 +490,8 @@ export type CardMaxOrderByAggregateInput = {
   month?: Prisma.SortOrder
   yearId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  statusMode?: Prisma.SortOrder
+  manualStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -462,6 +504,8 @@ export type CardMinOrderByAggregateInput = {
   month?: Prisma.SortOrder
   yearId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  statusMode?: Prisma.SortOrder
+  manualStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -560,6 +604,14 @@ export type CardUncheckedUpdateManyWithoutYearNestedInput = {
   deleteMany?: Prisma.CardScalarWhereInput | Prisma.CardScalarWhereInput[]
 }
 
+export type EnumCardStatusModeFieldUpdateOperationsInput = {
+  set?: $Enums.CardStatusMode
+}
+
+export type NullableEnumMonthStatusFieldUpdateOperationsInput = {
+  set?: $Enums.MonthStatus | null
+}
+
 export type CardCreateNestedOneWithoutIncomesInput = {
   create?: Prisma.XOR<Prisma.CardCreateWithoutIncomesInput, Prisma.CardUncheckedCreateWithoutIncomesInput>
   connectOrCreate?: Prisma.CardCreateOrConnectWithoutIncomesInput
@@ -593,6 +645,8 @@ export type CardCreateWithoutCreatedByInput = {
   title: string
   description?: string | null
   month: number
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -607,6 +661,8 @@ export type CardUncheckedCreateWithoutCreatedByInput = {
   description?: string | null
   month: number
   yearId: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -650,6 +706,8 @@ export type CardScalarWhereInput = {
   month?: Prisma.IntFilter<"Card"> | number
   yearId?: Prisma.StringFilter<"Card"> | string
   createdById?: Prisma.StringFilter<"Card"> | string
+  statusMode?: Prisma.EnumCardStatusModeFilter<"Card"> | $Enums.CardStatusMode
+  manualStatus?: Prisma.EnumMonthStatusNullableFilter<"Card"> | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Card"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Card"> | Date | string | null
@@ -660,6 +718,8 @@ export type CardCreateWithoutYearInput = {
   title: string
   description?: string | null
   month: number
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -674,6 +734,8 @@ export type CardUncheckedCreateWithoutYearInput = {
   description?: string | null
   month: number
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -712,6 +774,8 @@ export type CardCreateWithoutIncomesInput = {
   title: string
   description?: string | null
   month: number
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -727,6 +791,8 @@ export type CardUncheckedCreateWithoutIncomesInput = {
   month: number
   yearId: string
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -754,6 +820,8 @@ export type CardUpdateWithoutIncomesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -769,6 +837,8 @@ export type CardUncheckedUpdateWithoutIncomesInput = {
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -780,6 +850,8 @@ export type CardCreateWithoutExpensesInput = {
   title: string
   description?: string | null
   month: number
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -795,6 +867,8 @@ export type CardUncheckedCreateWithoutExpensesInput = {
   month: number
   yearId: string
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -822,6 +896,8 @@ export type CardUpdateWithoutExpensesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -837,6 +913,8 @@ export type CardUncheckedUpdateWithoutExpensesInput = {
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -849,6 +927,8 @@ export type CardCreateManyCreatedByInput = {
   description?: string | null
   month: number
   yearId: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -859,6 +939,8 @@ export type CardUpdateWithoutCreatedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -873,6 +955,8 @@ export type CardUncheckedUpdateWithoutCreatedByInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -886,6 +970,8 @@ export type CardUncheckedUpdateManyWithoutCreatedByInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   yearId?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -897,6 +983,8 @@ export type CardCreateManyYearInput = {
   description?: string | null
   month: number
   createdById: string
+  statusMode?: $Enums.CardStatusMode
+  manualStatus?: $Enums.MonthStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -907,6 +995,8 @@ export type CardUpdateWithoutYearInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -921,6 +1011,8 @@ export type CardUncheckedUpdateWithoutYearInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -934,6 +1026,8 @@ export type CardUncheckedUpdateManyWithoutYearInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  statusMode?: Prisma.EnumCardStatusModeFieldUpdateOperationsInput | $Enums.CardStatusMode
+  manualStatus?: Prisma.NullableEnumMonthStatusFieldUpdateOperationsInput | $Enums.MonthStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -986,6 +1080,8 @@ export type CardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   month?: boolean
   yearId?: boolean
   createdById?: boolean
+  statusMode?: boolean
+  manualStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1003,6 +1099,8 @@ export type CardSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   month?: boolean
   yearId?: boolean
   createdById?: boolean
+  statusMode?: boolean
+  manualStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1017,6 +1115,8 @@ export type CardSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   month?: boolean
   yearId?: boolean
   createdById?: boolean
+  statusMode?: boolean
+  manualStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1031,12 +1131,14 @@ export type CardSelectScalar = {
   month?: boolean
   yearId?: boolean
   createdById?: boolean
+  statusMode?: boolean
+  manualStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type CardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "month" | "yearId" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["card"]>
+export type CardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "month" | "yearId" | "createdById" | "statusMode" | "manualStatus" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["card"]>
 export type CardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   year?: boolean | Prisma.YearDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1068,6 +1170,8 @@ export type $CardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     month: number
     yearId: string
     createdById: string
+    statusMode: $Enums.CardStatusMode
+    manualStatus: $Enums.MonthStatus | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1504,6 +1608,8 @@ export interface CardFieldRefs {
   readonly month: Prisma.FieldRef<"Card", 'Int'>
   readonly yearId: Prisma.FieldRef<"Card", 'String'>
   readonly createdById: Prisma.FieldRef<"Card", 'String'>
+  readonly statusMode: Prisma.FieldRef<"Card", 'CardStatusMode'>
+  readonly manualStatus: Prisma.FieldRef<"Card", 'MonthStatus'>
   readonly createdAt: Prisma.FieldRef<"Card", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Card", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Card", 'DateTime'>

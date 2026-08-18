@@ -12,6 +12,8 @@ type CardWithEntries = Card & {
   expenses?: Expense[];
 };
 
+type GroupTotalsMap = Map<string, number>;
+
 @Injectable()
 export class MonthCardsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -26,7 +28,12 @@ export class MonthCardsService {
       include: { incomes: true, expenses: true },
       orderBy: { month: 'asc' },
     });
-    return cards.map((card) => this.attachBalance(card));
+
+    const { incomeTotals, expenseTotals } = await this.buildGroupTotals(cards);
+
+    return cards.map((card) =>
+      this.attachBalance(card, incomeTotals, expenseTotals),
+    );
   }
 
   async findById(yearId: string, cardId: string) {
@@ -39,7 +46,9 @@ export class MonthCardsService {
       throw new NotFoundException('Card não encontrado.');
     }
 
-    return this.attachBalance(card);
+    const { incomeTotals, expenseTotals } = await this.buildGroupTotals([card]);
+
+    return this.attachBalance(card, incomeTotals, expenseTotals);
   }
 
   async getYearMonthsStatus(yearId: string): Promise<YearMonthsStatusResponse> {
@@ -93,18 +102,102 @@ export class MonthCardsService {
     return { year: year.year, months };
   }
 
-  private attachBalance(card: CardWithEntries) {
-    const totalIncome = (card.incomes ?? []).reduce(
+  async getCardKpis(
+    yearId: string,
+    cardId: string,
+  ): Promise<{ title: string; value: number }[]> {
+    // Reaproveita findById — já calcula totalIncome/totalExpense/balance
+    // via attachBalance, então não recalcula a mesma coisa duas vezes.
+    const card = await this.findById(yearId, cardId);
+
+    return [
+      { title: 'Total de receitas', value: card.totalIncome },
+      { title: 'Total de despesas', value: card.totalExpense },
+      { title: 'Saldo', value: card.balance },
+    ];
+  }
+
+  // Soma de verdade os valores persistidos de todos os registros que
+  // compartilham um groupId (parcelas ou ocorrências recorrentes) —
+  // não multiplica valor-da-parcela × quantidade, pra continuar correto
+  // mesmo se uma parcela específica for editada individualmente depois.
+  // Não é escopado por card/ano: uma parcela pode ter irmãs em outro ano.
+  private async buildGroupTotals(cards: CardWithEntries[]): Promise<{
+    incomeTotals: GroupTotalsMap;
+    expenseTotals: GroupTotalsMap;
+  }> {
+    const incomeGroupIds = new Set<string>();
+    const expenseGroupIds = new Set<string>();
+
+    for (const card of cards) {
+      for (const income of card.incomes ?? []) {
+        if (income.groupId) incomeGroupIds.add(income.groupId);
+      }
+      for (const expense of card.expenses ?? []) {
+        if (expense.groupId) expenseGroupIds.add(expense.groupId);
+      }
+    }
+
+    const [incomeAggregates, expenseAggregates] = await Promise.all([
+      this.prisma.income.groupBy({
+        by: ['groupId'],
+        where: { groupId: { in: Array.from(incomeGroupIds) } },
+        _sum: { value: true },
+      }),
+      this.prisma.expense.groupBy({
+        by: ['groupId'],
+        where: { groupId: { in: Array.from(expenseGroupIds) } },
+        _sum: { value: true },
+      }),
+    ]);
+
+    const incomeTotals: GroupTotalsMap = new Map(
+      incomeAggregates
+        .filter((a) => a.groupId)
+        .map((a) => [a.groupId as string, a._sum.value?.toNumber() ?? 0]),
+    );
+
+    const expenseTotals: GroupTotalsMap = new Map(
+      expenseAggregates
+        .filter((a) => a.groupId)
+        .map((a) => [a.groupId as string, a._sum.value?.toNumber() ?? 0]),
+    );
+
+    return { incomeTotals, expenseTotals };
+  }
+
+  private attachBalance(
+    card: CardWithEntries,
+    incomeTotals: GroupTotalsMap,
+    expenseTotals: GroupTotalsMap,
+  ) {
+    const incomesWithTotals = (card.incomes ?? []).map((income) => ({
+      ...income,
+      groupTotalValue: income.groupId
+        ? (incomeTotals.get(income.groupId) ?? null)
+        : null,
+    }));
+
+    const expensesWithTotals = (card.expenses ?? []).map((expense) => ({
+      ...expense,
+      groupTotalValue: expense.groupId
+        ? (expenseTotals.get(expense.groupId) ?? null)
+        : null,
+    }));
+
+    const totalIncome = incomesWithTotals.reduce(
       (sum, income) => sum + income.value.toNumber(),
       0,
     );
-    const totalExpense = (card.expenses ?? []).reduce(
+    const totalExpense = expensesWithTotals.reduce(
       (sum, expense) => sum + expense.value.toNumber(),
       0,
     );
 
     return {
       ...card,
+      incomes: incomesWithTotals,
+      expenses: expensesWithTotals,
       totalIncome,
       totalExpense,
       balance: totalIncome - totalExpense,

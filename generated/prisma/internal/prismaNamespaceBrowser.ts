@@ -161,6 +161,8 @@ export const CardScalarFieldEnum = {
   month: 'month',
   yearId: 'yearId',
   createdById: 'createdById',
+  statusMode: 'statusMode',
+  manualStatus: 'manualStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -174,7 +176,12 @@ export const IncomeScalarFieldEnum = {
   description: 'description',
   type: 'type',
   value: 'value',
+  date: 'date',
   cardId: 'cardId',
+  recurrenceType: 'recurrenceType',
+  groupId: 'groupId',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -187,8 +194,12 @@ export const ExpenseScalarFieldEnum = {
   name: 'name',
   category: 'category',
   value: 'value',
-  installments: 'installments',
+  date: 'date',
   cardId: 'cardId',
+  recurrenceType: 'recurrenceType',
+  groupId: 'groupId',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

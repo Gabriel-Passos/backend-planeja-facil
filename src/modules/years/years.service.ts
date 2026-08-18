@@ -15,22 +15,8 @@ import { FindYearsQueryDto } from './dto/find-years-query.dto';
 import { BulkYearIdsDto } from './dto/bulk-year-ids.dto';
 import { buildPaginationMeta } from '@/src/common/utils/pagination.util';
 import type { PaginatedResult } from '@/src/common/interfaces/paginated-result.interface';
-import { BulkOperationResult } from './interface/bulk-operation-result.interface';
-
-const MONTH_NAMES = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-];
+import { MONTH_NAMES } from '@/src/common/constants/month-names.constant';
+import { BulkOperationResult } from '@/src/common/interfaces/bulk-operation-result.interface';
 
 @Injectable()
 export class YearsService {

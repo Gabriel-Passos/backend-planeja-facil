@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -18,6 +16,7 @@ import {
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
+import { BulkEntryIdsDto } from '../dto/bulk-entry-ids.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { YearRolesGuard } from '@/src/common/guards/year-roles.guard';
 import { YearRoles } from '@/src/common/decorators/year-roles.decorator';
@@ -43,6 +42,17 @@ export class ExpensesController {
     return this.expensesService.create(yearId, cardId, dto);
   }
 
+  @Post('bulk-remove')
+  @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
+  @ApiOperation({ summary: 'Remove várias despesas de uma vez' })
+  removeMany(
+    @Param('yearId') yearId: string,
+    @Param('cardId') cardId: string,
+    @Body() dto: BulkEntryIdsDto,
+  ) {
+    return this.expensesService.removeMany(yearId, cardId, dto.ids);
+  }
+
   @Patch(':expenseId')
   @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
   @ApiOperation({ summary: 'Atualiza uma despesa específica' })
@@ -58,8 +68,10 @@ export class ExpensesController {
 
   @Delete(':expenseId')
   @YearRoles(YearRole.ADMIN, YearRole.EDITOR)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Remove uma despesa específica' })
+  @ApiOperation({
+    summary:
+      'Remove uma despesa específica — se for parcela/recorrência, remove o grupo inteiro',
+  })
   @ApiParam({ name: 'expenseId', description: 'ID da despesa' })
   remove(
     @Param('yearId') yearId: string,

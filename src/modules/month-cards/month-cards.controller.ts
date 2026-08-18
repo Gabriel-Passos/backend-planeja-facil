@@ -45,4 +45,16 @@ export class MonthCardsController {
   findById(@Param('yearId') yearId: string, @Param('cardId') cardId: string) {
     return this.monthCardsService.findById(yearId, cardId);
   }
+
+  @Get(':cardId/kpis')
+  @ApiOperation({
+    summary: 'KPIs de um card: total de receitas, despesas e saldo',
+  })
+  @ApiParam({ name: 'cardId', description: 'ID do card' })
+  getCardKpis(
+    @Param('yearId') yearId: string,
+    @Param('cardId') cardId: string,
+  ) {
+    return this.monthCardsService.getCardKpis(yearId, cardId);
+  }
 }
