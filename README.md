@@ -1,3 +1,5 @@
+> Em desenvolvimento ⚠
+
 # 💰 planeja-fácil — Backend
 
 > Um app de finanças pessoais simples, porém robusto. Organize suas receitas e despesas mês a mês, colabore com outras pessoas no mesmo ano financeiro, e nunca perca o controle do que sobra no fim do mês.
